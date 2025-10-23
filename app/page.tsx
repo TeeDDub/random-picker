@@ -126,7 +126,7 @@ export default function Home() {
             🎲 Random Picker
           </h1>
           <p className="text-xl text-gray-600">
-            랜덤 선택기 - 데이터를 입력하고 공정하게 추첨하세요
+            랜덤 뽑기. 오늘의 결정, 팀 나누기 대신해 드립니다.
           </p>
         </div>
 

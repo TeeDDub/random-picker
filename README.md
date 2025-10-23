@@ -1,4 +1,4 @@
-# 🎲 Random Picker - 랜덤 선택기
+# 🎲 Random Picker - 랜덤 뽑기
 
 랜덤 뽑기. 오늘의 결정, 팀 나누기 대신해 드립니다.
 
