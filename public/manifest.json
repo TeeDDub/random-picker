@@ -1,7 +1,7 @@
 {
   "name": "Random Picker - 랜덤 선택기",
   "short_name": "Random Picker",
-  "description": "Next.js + TypeScript로 구현된 강력한 랜덤 선택 애플리케이션. 직접 입력, Google Sheets 불러오기, 룰렛 애니메이션으로 공정한 랜덤 선택을 경험하세요.",
+  "description": "랜덤 뽑기 애플리케이션. 직접 입력, Google Sheets 불러오기, 룰렛 애니메이션으로 공정한 랜덤 선택을 경험하세요.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
