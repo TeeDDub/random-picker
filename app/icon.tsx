@@ -21,11 +21,72 @@ export default function Icon() {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-          fontSize: 24,
+          background: 'linear-gradient(135deg, #5B21B6 0%, #7C3AED 50%, #6366F1 100%)',
+          borderRadius: '6px',
         }}
       >
-        🎲
+        {/* 작은 주사위 표현 */}
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            background: 'white',
+            borderRadius: '4px',
+            width: '20px',
+            height: '20px',
+            boxShadow: '0 2px 4px rgba(0, 0, 0, 0.2)',
+          }}
+        >
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+            <div style={{ display: 'flex', gap: '4px', justifyContent: 'center' }}>
+              <div
+                style={{
+                  width: '2.5px',
+                  height: '2.5px',
+                  borderRadius: '50%',
+                  background: '#7C3AED',
+                }}
+              />
+              <div
+                style={{
+                  width: '2.5px',
+                  height: '2.5px',
+                  borderRadius: '50%',
+                  background: '#7C3AED',
+                }}
+              />
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'center' }}>
+              <div
+                style={{
+                  width: '2.5px',
+                  height: '2.5px',
+                  borderRadius: '50%',
+                  background: '#7C3AED',
+                }}
+              />
+            </div>
+            <div style={{ display: 'flex', gap: '4px', justifyContent: 'center' }}>
+              <div
+                style={{
+                  width: '2.5px',
+                  height: '2.5px',
+                  borderRadius: '50%',
+                  background: '#7C3AED',
+                }}
+              />
+              <div
+                style={{
+                  width: '2.5px',
+                  height: '2.5px',
+                  borderRadius: '50%',
+                  background: '#7C3AED',
+                }}
+              />
+            </div>
+          </div>
+        </div>
       </div>
     ),
     {

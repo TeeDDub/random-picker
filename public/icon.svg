@@ -1,34 +1,56 @@
 <svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
   <defs>
     <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
-      <stop offset="100%" style="stop-color:#764ba2;stop-opacity:1" />
+      <stop offset="0%" style="stop-color:#5B21B6;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#7C3AED;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#6366F1;stop-opacity:1" />
     </linearGradient>
+    <linearGradient id="diceGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#FFFFFF;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#F3F4F6;stop-opacity:1" />
+    </linearGradient>
+    <filter id="shadow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="8"/>
+      <feOffset dx="0" dy="4" result="offsetblur"/>
+      <feComponentTransfer>
+        <feFuncA type="linear" slope="0.3"/>
+      </feComponentTransfer>
+      <feMerge>
+        <feMergeNode/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
   </defs>
   
   <!-- 배경 -->
-  <rect width="512" height="512" rx="80" fill="url(#grad)"/>
+  <rect width="512" height="512" rx="90" fill="url(#grad)"/>
   
-  <!-- 주사위 몸체 -->
-  <g transform="translate(256, 256)">
-    <!-- 흰색 주사위 -->
-    <rect x="-120" y="-120" width="240" height="240" rx="30" fill="white" opacity="0.95"/>
-    
-    <!-- 주사위 점들 (6) -->
-    <circle cx="-70" cy="-70" r="18" fill="#764ba2"/>
-    <circle cx="-70" cy="0" r="18" fill="#764ba2"/>
-    <circle cx="-70" cy="70" r="18" fill="#764ba2"/>
-    <circle cx="70" cy="-70" r="18" fill="#764ba2"/>
-    <circle cx="70" cy="0" r="18" fill="#764ba2"/>
-    <circle cx="70" cy="70" r="18" fill="#764ba2"/>
+  <!-- 배경 장식 요소들 -->
+  <g opacity="0.2">
+    <rect x="40" y="40" width="60" height="60" rx="10" fill="white" transform="rotate(15 70 70)"/>
+    <circle cx="420" cy="60" r="30" fill="white"/>
+    <rect x="40" y="410" width="50" height="50" rx="8" fill="white" transform="rotate(-20 65 435)"/>
+    <circle cx="450" cy="450" r="25" fill="white"/>
+    <rect x="180" y="50" width="40" height="40" rx="6" fill="white" transform="rotate(25 200 70)"/>
+    <rect x="350" y="420" width="45" height="45" rx="7" fill="white" transform="rotate(-15 372 442)"/>
   </g>
   
-  <!-- 장식 작은 주사위들 -->
-  <g opacity="0.3">
-    <circle cx="80" cy="80" r="8" fill="white"/>
-    <circle cx="432" cy="80" r="8" fill="white"/>
-    <circle cx="80" cy="432" r="8" fill="white"/>
-    <circle cx="432" cy="432" r="8" fill="white"/>
+  <!-- 주사위 몸체 -->
+  <g transform="translate(256, 256)" filter="url(#shadow)">
+    <!-- 흰색 주사위 -->
+    <rect x="-130" y="-130" width="260" height="260" rx="35" fill="url(#diceGrad)"/>
+    
+    <!-- 주사위 점들 (5) - 중앙 패턴 -->
+    <!-- 왼쪽 상단 -->
+    <circle cx="-65" cy="-65" r="20" fill="#7C3AED"/>
+    <!-- 오른쪽 상단 -->
+    <circle cx="65" cy="-65" r="20" fill="#7C3AED"/>
+    <!-- 중앙 -->
+    <circle cx="0" cy="0" r="20" fill="#7C3AED"/>
+    <!-- 왼쪽 하단 -->
+    <circle cx="-65" cy="65" r="20" fill="#7C3AED"/>
+    <!-- 오른쪽 하단 -->
+    <circle cx="65" cy="65" r="20" fill="#7C3AED"/>
   </g>
 </svg>
 

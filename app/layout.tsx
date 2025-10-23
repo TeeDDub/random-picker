@@ -25,7 +25,7 @@ export const metadata: Metadata = {
     siteName: 'Random Picker',
     images: [
       {
-        url: '/og-image.png',
+        url: '/opengraph-image.png',
         width: 1200,
         height: 630,
         alt: 'Random Picker - 랜덤 선택기',
@@ -36,7 +36,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: '🎲 Random Picker - 랜덤 선택기',
     description: 'Next.js + TypeScript로 구현된 강력한 랜덤 선택 애플리케이션. 직접 입력, Google Sheets 불러오기, 룰렛 애니메이션으로 공정한 랜덤 선택을 경험하세요.',
-    images: ['/og-image.png'],
+    images: ['/opengraph-image.png'],
   },
   robots: {
     index: true,
