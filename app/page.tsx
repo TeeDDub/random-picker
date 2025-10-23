@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { FiTrash2, FiShuffle, FiEdit } from 'react-icons/fi';
+import { FiTrash2, FiShuffle, FiEdit, FiGithub } from 'react-icons/fi';
 import { DataItem, PickHistory as PickHistoryType } from '@/types';
 import {
   getAllData,
@@ -267,10 +267,18 @@ export default function Home() {
         )}
 
         {/* Footer */}
-        <div className="text-center pt-8 pb-4">
-          <p className="text-gray-500 text-sm">
-            Made with ❤️ for better decisions
-          </p>
+        <div className="text-center pt-8 pb-4 space-y-3">
+          <div className="flex items-center justify-center gap-2">
+            <a
+              href="https://github.com/TeeDDub/random-picker"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 px-4 py-2 bg-gray-800 hover:bg-gray-700 text-white rounded-lg transition-colors shadow-md hover:shadow-lg"
+            >
+              <FiGithub size={20} />
+              <span className="font-medium">GitHub</span>
+            </a>
+          </div>
         </div>
       </div>
     </main>
