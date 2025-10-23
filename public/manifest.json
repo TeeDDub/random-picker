@@ -1,0 +1,32 @@
+{
+  "name": "Random Picker - 랜덤 선택기",
+  "short_name": "Random Picker",
+  "description": "Next.js + TypeScript로 구현된 강력한 랜덤 선택 애플리케이션. 직접 입력, Google Sheets 불러오기, 룰렛 애니메이션으로 공정한 랜덤 선택을 경험하세요.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#8b5cf6",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon.svg",
+      "sizes": "192x192",
+      "type": "image/svg+xml"
+    },
+    {
+      "src": "/icon.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml"
+    }
+  ],
+  "categories": ["utilities", "productivity"],
+  "lang": "ko-KR",
+  "dir": "ltr"
+}
+
