@@ -30,7 +30,7 @@ export const PickHistory: React.FC<PickHistoryProps> = ({ history, onClear }) =>
       <div className="flex justify-between items-center">
         <h2 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
           <FiClock size={24} />
-          선택 이력
+          히스토리
         </h2>
         <button
           onClick={onClear}

@@ -101,7 +101,7 @@ export default function Home() {
 
   // Clear history
   const handleClearHistory = () => {
-    if (confirm('선택 이력을 삭제하시겠습니까?')) {
+    if (confirm('히스토리를 삭제하시겠습니까?')) {
       clearPickHistory();
       setPickHistory([]);
     }

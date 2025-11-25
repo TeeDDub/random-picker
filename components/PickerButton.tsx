@@ -55,16 +55,16 @@ export const PickerButton: React.FC<PickerButtonProps> = ({
           <div className="space-y-2">
             <div className="flex items-center justify-center gap-2">
               <FiShuffle className="animate-spin" size={24} />
-              <span>룰렛 진행중</span>
+              <span>추첨 진행중</span>
             </div>
             <div className="text-sm opacity-90">
-              {spinCount} 회전
+              추첨 중...
             </div>
           </div>
         ) : (
           <span className="flex flex-col items-center gap-2">
             <FiShuffle size={32} />
-            <span>🎰 룰렛 시작!</span>
+            <span>🎰 추첨!</span>
           </span>
         )}
       </button>
