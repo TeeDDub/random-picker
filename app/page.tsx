@@ -12,6 +12,8 @@ import {
   addToPickHistory,
   clearPickHistory,
   clearAll,
+  getRemoveSameTitleOption,
+  saveRemoveSameTitleOption,
 } from '@/lib/localStorage';
 import { ManualInput } from '@/components/ManualInput';
 import { GoogleSheetsInput } from '@/components/GoogleSheetsInput';
@@ -31,6 +33,9 @@ export default function Home() {
   const [viewMode, setViewMode] = useState<ViewMode>('input');
   const [isAnimating, setIsAnimating] = useState(false);
   const [spinCount, setSpinCount] = useState(0);
+  // 중복 방지: 이미 뽑힌 항목들 (새로고침 시 초기화)
+  const [pickedItems, setPickedItems] = useState<DataItem[]>([]);
+  const [removeSameTitle, setRemoveSameTitle] = useState(false);
   const randomPickerRef = React.useRef<{ startPick: () => void } | null>(null);
 
   // Load data from localStorage on mount
@@ -44,6 +49,7 @@ export default function Home() {
     }
     
     setPickHistory(getPickHistory());
+    setRemoveSameTitle(getRemoveSameTitleOption());
   }, []);
 
   // Save data to localStorage whenever it changes
@@ -84,9 +90,27 @@ export default function Home() {
       timestamp: Date.now(),
       item,
     };
-    
+
     addToPickHistory(newHistory);
     setPickHistory(getPickHistory());
+
+    // 뽑힌 항목은 다음 추첨에서 제외 (옵션에 따라 같은 제목 전체 제외)
+    setPickedItems(prev => (
+      removeSameTitle
+        ? [...prev, ...allData.filter(d => !prev.includes(d) && d.title === item.title)]
+        : [...prev, item]
+    ));
+  };
+
+  // Reset picked items so everything can be drawn again
+  const handleResetPicks = () => {
+    setPickedItems([]);
+  };
+
+  // Toggle the remove-same-title option (persisted)
+  const handleRemoveSameTitleChange = (value: boolean) => {
+    setRemoveSameTitle(value);
+    saveRemoveSameTitleOption(value);
   };
 
   // Clear all data
@@ -96,6 +120,7 @@ export default function Home() {
       setAllData([]);
       setGoogleSheetsUrl('');
       setPickHistory([]);
+      setPickedItems([]);
     }
   };
 
@@ -111,6 +136,9 @@ export default function Home() {
   const manualData = allData.filter(item => item.source === 'manual');
   const manualCount = manualData.length;
   const sheetsCount = allData.filter(item => item.source === 'google-sheets').length;
+
+  // 아직 뽑히지 않은 항목들 (추첨 대상)
+  const remainingData = allData.filter(item => !pickedItems.includes(item));
 
   // Prevent hydration mismatch
   if (!mounted) {
@@ -231,7 +259,7 @@ export default function Home() {
             {/* Left: Random Picker Result (wider) */}
             <div className="lg:col-span-2 animate-fade-in">
               <RandomPicker
-                data={allData}
+                data={remainingData}
                 onPick={handlePick}
                 onAnimationChange={(animating, count) => {
                   setIsAnimating(animating);
@@ -245,10 +273,14 @@ export default function Home() {
               <div className="animate-fade-in">
                 <PickerButton
                   totalItems={allData.length}
+                  remainingCount={remainingData.length}
                   manualCount={manualData.length}
                   sheetsCount={allData.filter(item => item.source === 'google-sheets').length}
                   isAnimating={isAnimating}
                   spinCount={spinCount}
+                  removeSameTitle={removeSameTitle}
+                  onRemoveSameTitleChange={handleRemoveSameTitleChange}
+                  onReset={handleResetPicks}
                   onPick={() => {
                     const event = new CustomEvent('startRandomPick');
                     window.dispatchEvent(event);

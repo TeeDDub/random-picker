@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { FiShuffle } from 'react-icons/fi';
 import { DataItem } from '@/types';
 import { MediaRenderer } from './MediaRenderer';
+import { detectMediaType } from '@/lib/mediaDetector';
 
 interface RandomPickerProps {
   data: DataItem[];
@@ -16,8 +17,34 @@ export const RandomPicker: React.FC<RandomPickerProps> = ({ data, onPick, onAnim
   const [isAnimating, setIsAnimating] = useState(false);
   const [currentCandidate, setCurrentCandidate] = useState<DataItem | null>(null);
   const [spinCount, setSpinCount] = useState(0);
+  const animatingRef = React.useRef(false);
+  const spinTimeoutRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const totalItems = data.length;
+
+  // Cancel any in-flight spin when unmounting (e.g., switching tabs mid-spin)
+  React.useEffect(() => {
+    return () => {
+      if (spinTimeoutRef.current) {
+        clearTimeout(spinTimeoutRef.current);
+      }
+      animatingRef.current = false;
+    };
+  }, []);
+
+  // Preload image URLs so results don't show a blank frame while loading
+  React.useEffect(() => {
+    data.forEach(item => {
+      Object.values(item.properties).forEach(value => {
+        const media = detectMediaType(value);
+        if (media.type === 'image' && media.url) {
+          const img = new window.Image();
+          img.referrerPolicy = 'no-referrer';
+          img.src = media.url;
+        }
+      });
+    });
+  }, [data]);
 
   // Listen to external pick event
   React.useEffect(() => {
@@ -37,8 +64,10 @@ export const RandomPicker: React.FC<RandomPickerProps> = ({ data, onPick, onAnim
   }, [isAnimating, spinCount, onAnimationChange]);
 
   const handleRandomPick = () => {
-    if (totalItems === 0) return;
+    // animatingRef guards against double-triggering while a spin is in flight
+    if (totalItems === 0 || animatingRef.current) return;
 
+    animatingRef.current = true;
     setIsAnimating(true);
     setResult(null);
     setSpinCount(0);
@@ -65,10 +94,11 @@ export const RandomPicker: React.FC<RandomPickerProps> = ({ data, onPick, onAnim
       // 종료 조건
       if (progress >= 1) {
         // 최종 결과 표시
-        setTimeout(() => {
+        spinTimeoutRef.current = setTimeout(() => {
           setCurrentCandidate(null);
           setResult(finalPick);
           onPick(finalPick);
+          animatingRef.current = false;
           setIsAnimating(false);
         }, 500);
         return;
@@ -94,7 +124,7 @@ export const RandomPicker: React.FC<RandomPickerProps> = ({ data, onPick, onAnim
       }
 
       // 재귀적으로 다음 스핀 예약
-      setTimeout(spinNext, nextInterval);
+      spinTimeoutRef.current = setTimeout(spinNext, nextInterval);
     };
 
     // 첫 스핀 시작

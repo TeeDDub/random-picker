@@ -24,6 +24,43 @@ export const ManualInput: React.FC<ManualInputProps> = ({ data, onDataChange }) 
   });
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editingData, setEditingData] = useState<DataItem | null>(null);
+  const [quickInput, setQuickInput] = useState('');
+
+  // 빠른 입력: 콤마(또는 줄바꿈)로 구분한 후보를 한 번에 추가
+  // "이름*3" 형태는 같은 후보를 3번 등록 (당첨 확률 가중치)
+  const handleQuickAdd = () => {
+    const entries = quickInput.split(/[,\n]/).map(s => s.trim()).filter(Boolean);
+    const titles: string[] = [];
+
+    for (const entry of entries) {
+      const repeatMatch = entry.match(/^(.+?)\s*\*\s*(\d+)$/);
+      if (repeatMatch) {
+        const count = parseInt(repeatMatch[2], 10);
+        if (count > 100) {
+          alert(`반복 횟수는 100 이하로 입력해주세요: "${entry}"`);
+          return;
+        }
+        for (let i = 0; i < count; i++) {
+          titles.push(repeatMatch[1].trim());
+        }
+      } else {
+        titles.push(entry);
+      }
+    }
+
+    if (titles.length === 0) return;
+
+    const base = Date.now();
+    const newItems: DataItem[] = titles.map((title, index) => ({
+      id: `${base}-${index}`,
+      title,
+      properties: {},
+      source: 'manual',
+    }));
+
+    onDataChange([...data, ...newItems]);
+    setQuickInput('');
+  };
 
   const handleAddColumn = () => {
     const newColKey = `col${columns.length + 1}`;
@@ -287,6 +324,29 @@ export const ManualInput: React.FC<ManualInputProps> = ({ data, onDataChange }) 
             </tbody>
           </table>
         </div>
+      </div>
+
+      {/* 빠른 입력 */}
+      <div className="bg-purple-50 border border-purple-200 rounded-lg p-4 space-y-2">
+        <h3 className="text-sm font-bold text-purple-800">⚡ 빠른 입력</h3>
+        <p className="text-xs text-purple-700">
+          콤마(,) 또는 줄바꿈으로 구분해 한 번에 추가합니다. &quot;이름*3&quot;처럼 쓰면 같은 후보가 3번 들어갑니다.
+        </p>
+        <textarea
+          value={quickInput}
+          onChange={(e) => setQuickInput(e.target.value)}
+          rows={2}
+          placeholder="예: 치킨, 피자*3, 초밥"
+          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm resize-y"
+        />
+        <button
+          onClick={handleQuickAdd}
+          disabled={!quickInput.trim()}
+          className="w-full px-3 py-2 bg-purple-500 text-white rounded-lg hover:bg-purple-600 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-1 text-sm font-semibold"
+        >
+          <FiPlus size={16} />
+          한 번에 추가
+        </button>
       </div>
 
       <div className="text-xs text-gray-500 space-y-1">

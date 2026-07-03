@@ -1,21 +1,26 @@
 import { DataItem } from '@/types';
 
 /**
- * Convert Google Sheets URL to TSV export URL
+ * Convert Google Sheets URL to gviz CSV URL
+ *
+ * The gviz endpoint returns Access-Control-Allow-Origin: * for public sheets,
+ * so the browser can fetch it directly. The previous /export?format=tsv
+ * endpoint has no CORS headers and fails when fetched client-side.
+ * headers=1 forces the first row to be treated as column labels even when
+ * gviz auto-detection fails.
  */
-export const convertToTsvUrl = (url: string): string => {
-  // Extract spreadsheet ID and gid
+export const convertToCsvUrl = (url: string): string => {
   const spreadsheetIdMatch = url.match(/\/d\/([a-zA-Z0-9-_]+)/);
-  const gidMatch = url.match(/[#&]gid=([0-9]+)/);
-  
+  const gidMatch = url.match(/[?#&]gid=([0-9]+)/);
+
   if (!spreadsheetIdMatch) {
     throw new Error('Invalid Google Sheets URL');
   }
-  
+
   const spreadsheetId = spreadsheetIdMatch[1];
   const gid = gidMatch ? gidMatch[1] : '0';
-  
-  return `https://docs.google.com/spreadsheets/d/${spreadsheetId}/export?format=tsv&gid=${gid}`;
+
+  return `https://docs.google.com/spreadsheets/d/${spreadsheetId}/gviz/tq?tqx=out:csv&headers=1&gid=${gid}`;
 };
 
 /**
@@ -23,15 +28,21 @@ export const convertToTsvUrl = (url: string): string => {
  */
 export const fetchGoogleSheetsData = async (url: string): Promise<DataItem[]> => {
   try {
-    const tsvUrl = convertToTsvUrl(url);
-    const response = await fetch(tsvUrl);
-    
+    const csvUrl = convertToCsvUrl(url);
+    const response = await fetch(csvUrl);
+
     if (!response.ok) {
       throw new Error('Failed to fetch data from Google Sheets');
     }
-    
+
     const text = await response.text();
-    return parseTsvData(text);
+
+    // Private sheets return an HTML login page instead of CSV
+    if (text.trimStart().startsWith('<')) {
+      throw new Error('Sheet is not shared publicly');
+    }
+
+    return parseCsvData(text);
   } catch (error) {
     console.error('Error fetching Google Sheets data:', error);
     throw error;
@@ -39,43 +50,92 @@ export const fetchGoogleSheetsData = async (url: string): Promise<DataItem[]> =>
 };
 
 /**
- * Parse TSV data into DataItem array
+ * Parse CSV text into rows (RFC 4180 level, character state machine).
+ * Handles quoted fields containing commas/newlines, "" escapes, CRLF/LF.
  */
-const parseTsvData = (tsvText: string): DataItem[] => {
-  const lines = tsvText.trim().split('\n');
-  
-  if (lines.length < 2) {
+const parseCsvRows = (csvText: string): string[][] => {
+  const rows: string[][] = [];
+  let row: string[] = [];
+  let field = '';
+  let inQuotes = false;
+
+  for (let i = 0; i < csvText.length; i++) {
+    const char = csvText[i];
+
+    if (inQuotes) {
+      if (char === '"') {
+        if (csvText[i + 1] === '"') {
+          field += '"';
+          i++;
+        } else {
+          inQuotes = false;
+        }
+      } else {
+        field += char;
+      }
+    } else if (char === '"') {
+      inQuotes = true;
+    } else if (char === ',') {
+      row.push(field);
+      field = '';
+    } else if (char === '\n' || char === '\r') {
+      if (char === '\r' && csvText[i + 1] === '\n') {
+        i++;
+      }
+      row.push(field);
+      field = '';
+      rows.push(row);
+      row = [];
+    } else {
+      field += char;
+    }
+  }
+
+  if (field !== '' || row.length > 0) {
+    row.push(field);
+    rows.push(row);
+  }
+
+  return rows;
+};
+
+/**
+ * Parse CSV data into DataItem array
+ */
+const parseCsvData = (csvText: string): DataItem[] => {
+  const rows = parseCsvRows(csvText);
+
+  if (rows.length < 2) {
     throw new Error('No data found in the sheet');
   }
-  
+
   // Parse header row
-  const headers = lines[0].split('\t').map(h => h.trim());
-  
+  const headers = rows[0].map(h => h.trim());
+
   // Parse data rows
   const items: DataItem[] = [];
-  
-  for (let i = 1; i < lines.length; i++) {
-    const values = lines[i].split('\t');
-    
-    if (values.length < 2) continue; // Skip invalid rows
-    
-    const id = values[0]?.trim() || String(i);
-    const title = values[1]?.trim() || 'Untitled';
-    
+
+  for (let i = 1; i < rows.length; i++) {
+    const values = rows[i].map(v => v.trim());
+
+    if (values.length < 2 || values.every(v => !v)) continue; // Skip invalid/empty rows
+
+    const id = values[0] || String(i);
+    const title = values[1] || 'Untitled';
+
     const properties: { [key: string]: string } = {};
-    
+
     // Add remaining columns as properties
     for (let j = 2; j < headers.length && j < values.length; j++) {
       const key = headers[j] || `Column ${j + 1}`;
-      const value = values[j]?.trim() || '';
+      const value = values[j] || '';
       if (value) {
         properties[key] = value;
       }
     }
-    
+
     items.push({ id, title, properties, source: 'google-sheets' });
   }
-  
+
   return items;
 };
-
