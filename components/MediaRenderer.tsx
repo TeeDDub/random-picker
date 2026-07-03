@@ -37,6 +37,7 @@ export const MediaRenderer: React.FC<MediaRendererProps> = ({ content, className
             fill
             className="object-contain rounded-lg shadow-lg"
             unoptimized
+            referrerPolicy="no-referrer"
           />
         </div>
       );

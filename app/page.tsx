@@ -12,6 +12,8 @@ import {
   addToPickHistory,
   clearPickHistory,
   clearAll,
+  getRemoveSameTitleOption,
+  saveRemoveSameTitleOption,
 } from '@/lib/localStorage';
 import { ManualInput } from '@/components/ManualInput';
 import { GoogleSheetsInput } from '@/components/GoogleSheetsInput';
@@ -31,6 +33,9 @@ export default function Home() {
   const [viewMode, setViewMode] = useState<ViewMode>('input');
   const [isAnimating, setIsAnimating] = useState(false);
   const [spinCount, setSpinCount] = useState(0);
+  // 중복 방지: 이미 뽑힌 항목들 (새로고침 시 초기화)
+  const [pickedItems, setPickedItems] = useState<DataItem[]>([]);
+  const [removeSameTitle, setRemoveSameTitle] = useState(false);
   const randomPickerRef = React.useRef<{ startPick: () => void } | null>(null);
 
   // Load data from localStorage on mount
@@ -44,6 +49,7 @@ export default function Home() {
     }
     
     setPickHistory(getPickHistory());
+    setRemoveSameTitle(getRemoveSameTitleOption());
   }, []);
 
   // Save data to localStorage whenever it changes
@@ -84,9 +90,27 @@ export default function Home() {
       timestamp: Date.now(),
       item,
     };
-    
+
     addToPickHistory(newHistory);
     setPickHistory(getPickHistory());
+
+    // 뽑힌 항목은 다음 추첨에서 제외 (옵션에 따라 같은 제목 전체 제외)
+    setPickedItems(prev => (
+      removeSameTitle
+        ? [...prev, ...allData.filter(d => !prev.includes(d) && d.title === item.title)]
+        : [...prev, item]
+    ));
+  };
+
+  // Reset picked items so everything can be drawn again
+  const handleResetPicks = () => {
+    setPickedItems([]);
+  };
+
+  // Toggle the remove-same-title option (persisted)
+  const handleRemoveSameTitleChange = (value: boolean) => {
+    setRemoveSameTitle(value);
+    saveRemoveSameTitleOption(value);
   };
 
   // Clear all data
@@ -96,6 +120,7 @@ export default function Home() {
       setAllData([]);
       setGoogleSheetsUrl('');
       setPickHistory([]);
+      setPickedItems([]);
     }
   };
 
@@ -112,60 +137,62 @@ export default function Home() {
   const manualCount = manualData.length;
   const sheetsCount = allData.filter(item => item.source === 'google-sheets').length;
 
+  // 아직 뽑히지 않은 항목들 (추첨 대상)
+  const remainingData = allData.filter(item => !pickedItems.includes(item));
+
   // Prevent hydration mismatch
   if (!mounted) {
     return null;
   }
 
   return (
-    <main className="min-h-screen py-8 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-gray-50 to-gray-100">
+    <main className="min-h-screen py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto space-y-6">
-        {/* Header */}
-        <div className="text-center space-y-4 animate-slide-up">
-          <h1 className="text-5xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-            🎲 Random Picker
-          </h1>
-          <p className="text-xl text-gray-600">
-            랜덤 뽑기. 오늘의 결정, 팀 나누기 대신해 드립니다.
-          </p>
-        </div>
+        {/* Header — dual nav-bar: carbon primary + pale-sky secondary */}
+        <header className="animate-slide-up">
+          <div className="retro-nav flex items-center gap-3 h-14 px-4">
+            <div className="retro-logo-pill px-4 py-1.5 text-base">🎲 RANDOM PICKER</div>
+            <h1 className="text-lg font-bold tracking-wide text-navgold">랜덤 뽑기</h1>
+          </div>
+          <div className="bg-canvassoft text-ink text-[11px] font-bold uppercase tracking-[1.5px] px-4 py-1.5 border-t border-white/40">
+            오늘의 결정, 팀 나누기 대신해 드립니다
+          </div>
+        </header>
 
         {/* View Mode Tabs */}
         <div className="flex justify-center gap-4 flex-wrap">
           <button
             onClick={() => setViewMode('input')}
-            className={`px-8 py-3 rounded-lg font-bold text-lg transition-all flex items-center gap-2 ${
-              viewMode === 'input'
-                ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg scale-105'
-                : 'bg-white text-gray-600 hover:bg-gray-50 shadow'
+            className={`retro-btn px-8 py-3 text-sm flex items-center gap-2 ${
+              viewMode === 'input' ? 'retro-tab-active' : 'retro-tab-idle'
             }`}
           >
-            <FiEdit size={20} />
+            <FiEdit size={18} />
             데이터 입력
           </button>
           <button
             onClick={() => setViewMode('picker')}
             disabled={allData.length === 0}
-            className={`px-8 py-3 rounded-lg font-bold text-lg transition-all flex items-center gap-2 ${
+            className={`retro-btn px-8 py-3 text-sm flex items-center gap-2 ${
               viewMode === 'picker'
-                ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-lg scale-105'
+                ? 'retro-tab-active'
                 : allData.length === 0
-                ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
-                : 'bg-white text-gray-600 hover:bg-gray-50 shadow'
+                ? 'retro-tab-disabled'
+                : 'retro-tab-idle'
             }`}
           >
-            <FiShuffle size={20} />
+            <FiShuffle size={18} />
             랜덤 추첨 {allData.length > 0 && `(${allData.length})`}
           </button>
           <button
             onClick={() => setViewMode('team')}
             disabled={allData.length === 0}
-            className={`px-8 py-3 rounded-lg font-bold text-lg transition-all flex items-center gap-2 ${
+            className={`retro-btn px-8 py-3 text-sm flex items-center gap-2 ${
               viewMode === 'team'
-                ? 'bg-gradient-to-r from-green-500 to-teal-500 text-white shadow-lg scale-105'
+                ? 'retro-tab-active'
                 : allData.length === 0
-                ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
-                : 'bg-white text-gray-600 hover:bg-gray-50 shadow'
+                ? 'retro-tab-disabled'
+                : 'retro-tab-idle'
             }`}
           >
             👥 팀나누기 {allData.length > 0 && `(${allData.length})`}
@@ -173,31 +200,31 @@ export default function Home() {
         </div>
 
         {/* Stats Bar */}
-        <div className="bg-white rounded-lg shadow-md p-4">
+        <div className="retro-panel-surface p-4">
           <div className="flex justify-between items-center flex-wrap gap-3">
             <div className="flex gap-3 flex-wrap">
-              <div className="px-4 py-2 bg-purple-100 rounded-lg">
-                <span className="text-sm font-semibold text-purple-800">
+              <div className="px-4 py-2 bg-lavender/60 rounded-[2px] shadow-[inset_0_1px_0_rgba(255,255,255,0.45)]">
+                <span className="text-sm font-bold text-ink">
                   ✏️ 직접 입력: {manualCount}개
                 </span>
               </div>
-              <div className="px-4 py-2 bg-green-100 rounded-lg">
-                <span className="text-sm font-semibold text-green-800">
+              <div className="px-4 py-2 bg-canvassoft/60 rounded-[2px] shadow-[inset_0_1px_0_rgba(255,255,255,0.45)]">
+                <span className="text-sm font-bold text-ink">
                   📊 Google Sheets: {sheetsCount}개
                 </span>
               </div>
-              <div className="px-4 py-2 bg-blue-100 rounded-lg">
-                <span className="text-sm font-semibold text-blue-800">
+              <div className="px-4 py-2 bg-platinum rounded-[2px] shadow-[inset_0_1px_0_rgba(255,255,255,0.45)]">
+                <span className="text-sm font-bold text-ink">
                   📦 전체: {allData.length}개
                 </span>
               </div>
             </div>
             <button
               onClick={handleClearAll}
-              className="px-4 py-2 bg-red-100 hover:bg-red-200 rounded-lg transition-colors flex items-center gap-2"
+              className="px-4 py-2 bg-[#fde5e6] hover:bg-[#fbd0d3] rounded-[2px] transition-colors flex items-center gap-2 text-[#8f0009]"
             >
               <FiTrash2 size={16} />
-              <span className="text-sm font-semibold text-red-800">전체 삭제</span>
+              <span className="text-sm font-bold">전체 삭제</span>
             </button>
           </div>
         </div>
@@ -231,7 +258,7 @@ export default function Home() {
             {/* Left: Random Picker Result (wider) */}
             <div className="lg:col-span-2 animate-fade-in">
               <RandomPicker
-                data={allData}
+                data={remainingData}
                 onPick={handlePick}
                 onAnimationChange={(animating, count) => {
                   setIsAnimating(animating);
@@ -245,10 +272,14 @@ export default function Home() {
               <div className="animate-fade-in">
                 <PickerButton
                   totalItems={allData.length}
+                  remainingCount={remainingData.length}
                   manualCount={manualData.length}
                   sheetsCount={allData.filter(item => item.source === 'google-sheets').length}
                   isAnimating={isAnimating}
                   spinCount={spinCount}
+                  removeSameTitle={removeSameTitle}
+                  onRemoveSameTitleChange={handleRemoveSameTitleChange}
+                  onReset={handleResetPicks}
                   onPick={() => {
                     const event = new CustomEvent('startRandomPick');
                     window.dispatchEvent(event);
@@ -266,20 +297,21 @@ export default function Home() {
           </div>
         )}
 
-        {/* Footer */}
-        <div className="text-center pt-8 pb-4 space-y-3">
-          <div className="flex items-center justify-center gap-2">
+        {/* Footer — carbon command slab */}
+        <footer className="retro-footer mt-8 p-5 text-center animate-fade-in">
+          <div className="flex items-center justify-center gap-4 flex-wrap">
+            <span className="text-xs tracking-wide">© 2026 Random Picker</span>
             <a
               href="https://github.com/TeeDDub/random-picker"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-4 py-2 bg-gray-800 hover:bg-gray-700 text-white rounded-lg transition-colors shadow-md hover:shadow-lg"
+              className="retro-btn retro-btn-amber inline-flex items-center gap-2 px-4 py-2 text-xs"
             >
-              <FiGithub size={20} />
-              <span className="font-medium">GitHub</span>
+              <FiGithub size={16} />
+              <span>GitHub</span>
             </a>
           </div>
-        </div>
+        </footer>
       </div>
     </main>
   );

@@ -22,7 +22,7 @@ export const detectMediaType = (content: string): MediaInfo => {
   if (isImageUrl(content)) {
     return {
       type: 'image',
-      url: content,
+      url: toDisplayImageUrl(content),
     };
   }
   
@@ -53,12 +53,32 @@ const extractYoutubeVideoId = (url: string): string | null => {
 };
 
 /**
+ * Convert a Google Drive share link to a directly displayable thumbnail URL.
+ * The uc?export=view endpoint is being blocked for direct embedding,
+ * so the thumbnail endpoint is used instead (w640 is enough for display).
+ * Non-Drive URLs are returned unchanged.
+ */
+export const toDisplayImageUrl = (url: string): string => {
+  const fileIdMatch = url.match(/drive\.google\.com\/file\/d\/([a-zA-Z0-9_-]+)/)
+    || (url.includes('drive.google.com') ? url.match(/[?&]id=([a-zA-Z0-9_-]+)/) : null);
+  if (fileIdMatch) {
+    return `https://drive.google.com/thumbnail?id=${fileIdMatch[1]}&sz=w640`;
+  }
+  return url;
+};
+
+/**
  * Check if URL is an image
  */
 const isImageUrl = (url: string): boolean => {
   // Check for image file extensions
   const imageExtensions = /\.(jpg|jpeg|png|gif|bmp|webp|svg)$/i;
   if (imageExtensions.test(url)) {
+    return true;
+  }
+
+  // Google Drive share links are treated as images (converted via toDisplayImageUrl)
+  if (/drive\.google\.com\/(file\/d\/|open\?id=|uc\?)/i.test(url)) {
     return true;
   }
   

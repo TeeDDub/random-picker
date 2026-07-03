@@ -4,6 +4,7 @@ const STORAGE_KEYS = {
   ALL_DATA: 'random-picker-all-data',
   GOOGLE_SHEETS_INFO: 'random-picker-google-sheets-info',
   PICK_HISTORY: 'random-picker-history',
+  REMOVE_SAME_TITLE: 'random-picker-remove-same-title',
 } as const;
 
 // All Data Management (통합 데이터)
@@ -90,6 +91,28 @@ export const addToPickHistory = (history: PickHistory): void => {
 export const clearPickHistory = (): void => {
   if (typeof window === 'undefined') return;
   localStorage.removeItem(STORAGE_KEYS.PICK_HISTORY);
+};
+
+// "Remove all items with the same title when picked" option
+export const getRemoveSameTitleOption = (): boolean => {
+  if (typeof window === 'undefined') return false;
+
+  try {
+    return localStorage.getItem(STORAGE_KEYS.REMOVE_SAME_TITLE) === '1';
+  } catch (error) {
+    console.error('Failed to load remove-same-title option:', error);
+    return false;
+  }
+};
+
+export const saveRemoveSameTitleOption = (value: boolean): void => {
+  if (typeof window === 'undefined') return;
+
+  try {
+    localStorage.setItem(STORAGE_KEYS.REMOVE_SAME_TITLE, value ? '1' : '0');
+  } catch (error) {
+    console.error('Failed to save remove-same-title option:', error);
+  }
 };
 
 export const clearAll = (): void => {
