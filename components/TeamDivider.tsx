@@ -287,17 +287,15 @@ export const TeamDivider: React.FC<TeamDividerProps> = ({ data }) => {
   return (
     <div className="space-y-6">
       {/* 설정 패널 */}
-      <div className="bg-white rounded-lg shadow-md p-6 space-y-4">
+      <div className="retro-panel p-6 space-y-4">
+        <h2 className="retro-section-bar -mx-6 -mt-6">👥 팀나누기</h2>
         <div className="flex items-center justify-between">
-          <div>
-            <h2 className="text-3xl font-bold text-gray-800">👥 팀나누기</h2>
-            <p className="text-sm text-gray-600 mt-1">
-              총 {data.length}명을 {teamCount}개 팀으로 나눕니다
-            </p>
-          </div>
+          <p className="text-sm font-bold text-inksoft">
+            총 {data.length}명을 {teamCount}개 팀으로 나눕니다
+          </p>
           <div className="text-right">
             <div className="flex items-center gap-3">
-              <span className="text-sm font-semibold text-gray-600">팀 개수</span>
+              <span className="text-[11px] font-bold uppercase tracking-wide text-inksoft">팀 개수</span>
               <input
                 type="number"
                 min="1"
@@ -310,10 +308,10 @@ export const TeamDivider: React.FC<TeamDividerProps> = ({ data }) => {
                   }
                 }}
                 disabled={stepByStepMode}
-                className="w-20 px-3 py-2 border border-gray-300 rounded-lg text-center font-bold text-lg focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
+                className="retro-input w-20 px-3 py-2 text-center font-bold text-lg disabled:opacity-50 disabled:cursor-not-allowed"
               />
             </div>
-            <p className="text-xs text-gray-500 mt-1">최대 20개</p>
+            <p className="text-xs text-inksoft mt-1">최대 20개</p>
           </div>
         </div>
 
@@ -322,11 +320,9 @@ export const TeamDivider: React.FC<TeamDividerProps> = ({ data }) => {
             <button
               onClick={handleDivideTeams}
               disabled={data.length === 0 || isAnimating}
-              className={`py-4 px-6 rounded-lg font-bold text-lg transition-all transform shadow-lg flex items-center justify-center gap-2 ${
-                isAnimating
-                  ? 'bg-gradient-to-r from-orange-400 to-red-400 animate-pulse scale-95'
-                  : 'bg-gradient-to-r from-green-500 to-teal-500 hover:from-green-600 hover:to-teal-600 hover:scale-105'
-              } text-white disabled:from-gray-300 disabled:to-gray-300 disabled:cursor-not-allowed disabled:transform-none`}
+              className={`retro-btn retro-btn-signal py-4 px-6 text-base flex items-center justify-center gap-2 ${
+                isAnimating ? 'retro-btn-busy' : ''
+              }`}
             >
               {isAnimating ? (
                 <>
@@ -344,7 +340,7 @@ export const TeamDivider: React.FC<TeamDividerProps> = ({ data }) => {
             <button
               onClick={handleStartStepByStep}
               disabled={data.length === 0 || isAnimating}
-              className="py-4 px-6 rounded-lg font-bold text-lg transition-all transform shadow-lg flex items-center justify-center gap-2 bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 hover:scale-105 text-white disabled:from-gray-300 disabled:to-gray-300 disabled:cursor-not-allowed disabled:transform-none"
+              className="retro-btn retro-btn-carbon py-4 px-6 text-base flex items-center justify-center gap-2"
             >
               <span>👆</span>
               한 명씩 나누기
@@ -352,24 +348,24 @@ export const TeamDivider: React.FC<TeamDividerProps> = ({ data }) => {
           </div>
         ) : (
           <div className="space-y-3">
-            <div className="bg-blue-50 border-2 border-blue-300 rounded-lg p-4 text-center">
-              <p className="text-lg font-bold text-blue-800 mb-2">
+            <div className="retro-plate border-l-4 border-l-[#ecab37] p-4 text-center">
+              <p className="text-base font-bold uppercase tracking-wide text-ink mb-2">
                 한 명씩 나누기 모드
               </p>
-              <p className="text-sm text-blue-600">
+              <p className="text-sm font-bold text-inksoft">
                 진행: {nextMemberIndex} / {shuffledData.length}명
               </p>
             </div>
 
             {/* 룰렛 후보 표시 */}
             {rouletteCandidate && (
-              <div className="bg-gradient-to-br from-purple-50 via-pink-50 to-orange-50 border-4 border-purple-300 rounded-lg p-6 animate-pulse">
-                <div className="space-y-3">
-                  <p className="text-center text-sm font-bold text-purple-700">
+              <div className="retro-hero p-6 animate-pulse">
+                <div className="relative space-y-3">
+                  <p className="text-center text-[12px] font-bold uppercase tracking-wide text-inksoft">
                     {isAnimating && currentTeamIndex >= 0 ? `팀 ${currentTeamIndex + 1}에 배치 중...` : '선택됨!'}
                   </p>
-                  <div className="bg-white bg-opacity-70 rounded-lg p-4">
-                    <p className="text-2xl font-bold text-gray-800 mb-3 text-center">
+                  <div className="bg-white/70 rounded-[2px] p-4">
+                    <p className="retro-display retro-display-rolling text-2xl mb-3 text-center">
                       {isMediaContent(rouletteCandidate.title) ? '멤버' : rouletteCandidate.title}
                     </p>
                     {Object.entries(rouletteCandidate.properties)
@@ -380,8 +376,8 @@ export const TeamDivider: React.FC<TeamDividerProps> = ({ data }) => {
                           .filter(([key, value]) => !isMediaContent(value))
                           .map(([key, value]) => (
                             <div key={key} className="text-sm">
-                              <div className="font-semibold text-gray-700 mb-1">{key}</div>
-                              <div className="text-gray-600">{value}</div>
+                              <div className="text-[11px] font-bold uppercase tracking-wide text-inksoft mb-1">{key}</div>
+                              <div className="text-ink">{value}</div>
                             </div>
                           ))}
                       </div>
@@ -395,11 +391,9 @@ export const TeamDivider: React.FC<TeamDividerProps> = ({ data }) => {
               <button
                 onClick={handlePlaceNextMember}
                 disabled={nextMemberIndex >= shuffledData.length || isAnimating}
-                className={`py-4 px-6 rounded-lg font-bold text-lg transition-all transform shadow-lg flex items-center justify-center gap-2 ${
-                  isAnimating
-                    ? 'bg-gradient-to-r from-orange-400 to-red-400 animate-pulse'
-                    : 'bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 hover:scale-105'
-                } text-white disabled:from-gray-300 disabled:to-gray-300 disabled:cursor-not-allowed disabled:transform-none`}
+                className={`retro-btn retro-btn-signal py-4 px-6 text-base flex items-center justify-center gap-2 ${
+                  isAnimating ? 'retro-btn-busy' : ''
+                }`}
               >
                 {nextMemberIndex >= shuffledData.length ? (
                   <>✅ 완료</>
@@ -413,7 +407,7 @@ export const TeamDivider: React.FC<TeamDividerProps> = ({ data }) => {
               <button
                 onClick={handleCancelStepByStep}
                 disabled={isAnimating}
-                className="py-4 px-6 rounded-lg font-bold text-lg transition-all transform shadow-lg flex items-center justify-center gap-2 bg-gradient-to-r from-gray-400 to-gray-500 hover:from-gray-500 hover:to-gray-600 hover:scale-105 text-white disabled:opacity-50 disabled:cursor-not-allowed"
+                className="retro-btn retro-tab-idle py-4 px-6 text-base flex items-center justify-center gap-2"
               >
                 <FiX size={20} />
                 취소
@@ -423,7 +417,7 @@ export const TeamDivider: React.FC<TeamDividerProps> = ({ data }) => {
         )}
 
         {data.length === 0 && (
-          <div className="text-center text-gray-500 text-sm">
+          <div className="text-center text-inksoft text-sm font-bold">
             데이터 입력 화면에서 먼저 데이터를 추가해주세요
           </div>
         )}
@@ -440,8 +434,8 @@ export const TeamDivider: React.FC<TeamDividerProps> = ({ data }) => {
             return (
               <div
                 key={team.id}
-                className={`rounded-lg border-2 ${colorClass} p-4 shadow-md animate-fade-in ${
-                  isCurrentTeam ? 'ring-4 ring-yellow-400 scale-105' : ''
+                className={`rounded-md border-2 ${colorClass} p-4 shadow-[0_2px_0_#3d4f97,0_8px_16px_rgba(33,36,46,0.2)] animate-fade-in ${
+                  isCurrentTeam ? 'ring-4 ring-signal scale-105' : ''
                 } transition-all duration-200`}
                 style={{ animationDelay: `${index * 0.05}s` }}
               >
@@ -505,8 +499,8 @@ export const TeamDivider: React.FC<TeamDividerProps> = ({ data }) => {
                     return (
                       <div
                         key={member.id}
-                        className={`bg-white bg-opacity-60 rounded p-2 text-sm transition-all duration-300 ${
-                          isLatestMember ? 'ring-2 ring-yellow-400 animate-pulse' : ''
+                        className={`bg-white bg-opacity-60 rounded-[2px] p-2 text-sm transition-all duration-300 ${
+                          isLatestMember ? 'ring-2 ring-signal animate-pulse' : ''
                         }`}
                       >
                         <div className="flex items-start gap-2">
@@ -518,12 +512,12 @@ export const TeamDivider: React.FC<TeamDividerProps> = ({ data }) => {
                               {member.title}
                             </p>
                             {member.source === 'manual' && (
-                              <span className="inline-block mt-1 text-xs px-2 py-0.5 bg-purple-200 text-purple-700 rounded">
+                              <span className="inline-block mt-1 text-xs px-2 py-0.5 bg-lavender text-ink font-bold rounded-[2px]">
                                 직접입력
                               </span>
                             )}
                             {member.source === 'google-sheets' && (
-                              <span className="inline-block mt-1 text-xs px-2 py-0.5 bg-green-200 text-green-700 rounded">
+                              <span className="inline-block mt-1 text-xs px-2 py-0.5 bg-canvassoft text-ink font-bold rounded-[2px]">
                                 Sheets
                               </span>
                             )}
@@ -541,28 +535,28 @@ export const TeamDivider: React.FC<TeamDividerProps> = ({ data }) => {
 
       {/* 통계 */}
       {teams.length > 0 && (
-        <div className="bg-white rounded-lg shadow-md p-6">
-          <h3 className="text-lg font-bold text-gray-800 mb-4">📊 팀 분배 통계</h3>
+        <div className="retro-panel p-6 space-y-4">
+          <h3 className="retro-section-bar -mx-6 -mt-6">📊 팀 분배 통계</h3>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div className="bg-blue-50 rounded-lg p-4 text-center">
-              <p className="text-sm text-gray-600">총 팀 수</p>
-              <p className="text-2xl font-bold text-blue-700">{teams.length}</p>
+            <div className="retro-plate p-4 text-center">
+              <p className="text-[11px] font-bold uppercase tracking-wide text-inksoft">총 팀 수</p>
+              <p className="text-2xl font-black text-ink">{teams.length}</p>
             </div>
-            <div className="bg-green-50 rounded-lg p-4 text-center">
-              <p className="text-sm text-gray-600">총 인원</p>
-              <p className="text-2xl font-bold text-green-700">{data.length}</p>
+            <div className="retro-plate p-4 text-center">
+              <p className="text-[11px] font-bold uppercase tracking-wide text-inksoft">총 인원</p>
+              <p className="text-2xl font-black text-ink">{data.length}</p>
             </div>
-            <div className="bg-purple-50 rounded-lg p-4 text-center">
-              <p className="text-sm text-gray-600">평균 인원</p>
-              <p className="text-2xl font-bold text-purple-700">
+            <div className="retro-plate p-4 text-center">
+              <p className="text-[11px] font-bold uppercase tracking-wide text-inksoft">평균 인원</p>
+              <p className="text-2xl font-black text-ink">
                 {(data.length / teams.length).toFixed(1)}
               </p>
             </div>
-            <div className="bg-orange-50 rounded-lg p-4 text-center">
-              <p className="text-sm text-gray-600">최대 인원차</p>
-              <p className="text-2xl font-bold text-orange-700">
-                {teams.length > 0 
-                  ? Math.max(...teams.map(t => t.members.filter(m => m).length)) - 
+            <div className="retro-plate p-4 text-center">
+              <p className="text-[11px] font-bold uppercase tracking-wide text-inksoft">최대 인원차</p>
+              <p className="text-2xl font-black text-brand">
+                {teams.length > 0
+                  ? Math.max(...teams.map(t => t.members.filter(m => m).length)) -
                     Math.min(...teams.map(t => t.members.filter(m => m).length))
                   : 0}
               </p>

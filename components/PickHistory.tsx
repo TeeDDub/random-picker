@@ -26,17 +26,17 @@ export const PickHistory: React.FC<PickHistoryProps> = ({ history, onClear }) =>
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-6 space-y-4">
-      <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
-          <FiClock size={24} />
-          히스토리
+    <div className="retro-panel p-6 space-y-4">
+      <div className="retro-section-bar -mx-6 -mt-6 flex justify-between items-center">
+        <h2 className="flex items-center gap-2">
+          <FiClock size={14} />
+          📜 히스토리
         </h2>
         <button
           onClick={onClear}
-          className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors flex items-center gap-2 text-sm font-semibold"
+          className="px-3 py-1 bg-[#fde5e6] hover:bg-[#fbd0d3] text-[#8f0009] rounded-[2px] transition-colors flex items-center gap-1 text-[11px] font-bold"
         >
-          <FiTrash2 size={16} />
+          <FiTrash2 size={12} />
           이력 삭제
         </button>
       </div>
@@ -49,31 +49,31 @@ export const PickHistory: React.FC<PickHistoryProps> = ({ history, onClear }) =>
           return (
             <div
               key={entry.timestamp}
-              className={`p-4 rounded-lg hover:bg-gray-100 transition-colors border-l-4 ${
-                isManual ? 'bg-purple-50 border-purple-500' : 'bg-green-50 border-green-500'
+              className={`retro-news-row p-4 border-l-4 ${
+                isManual ? 'border-l-lavender' : 'border-l-canvassoft'
               }`}
             >
               <div className="flex justify-between items-start mb-2">
                 <div className="flex items-center gap-2">
-                  <span className="text-xs font-semibold text-gray-500">
+                  <span className="text-xs font-bold text-inksoft">
                     #{history.length - index}
                   </span>
-                  <span className={`text-xs px-2 py-0.5 rounded font-semibold ${
-                    isManual ? 'bg-purple-200 text-purple-700' : 'bg-green-200 text-green-700'
+                  <span className={`text-xs px-2 py-0.5 rounded-[2px] font-bold text-ink ${
+                    isManual ? 'bg-lavender' : 'bg-canvassoft'
                   }`}>
                     {isManual ? '직접입력' : 'Sheets'}
                   </span>
                 </div>
-                <span className="text-xs text-gray-500">{formatTime(entry.timestamp)}</span>
+                <span className="text-[10px] text-inksoft opacity-75">{formatTime(entry.timestamp)}</span>
               </div>
 
               <div>
-                <h4 className="font-bold text-gray-800 mb-2">{item.title}</h4>
+                <h4 className="font-bold text-ink mb-2">{item.title}</h4>
                 {Object.keys(item.properties).length > 0 && (
-                  <div className="space-y-1 text-sm text-gray-600">
+                  <div className="space-y-1 text-sm text-inksoft">
                     {Object.entries(item.properties).slice(0, 2).map(([key, value]) => (
                       <div key={key} className="truncate">
-                        <span className="font-semibold">{key}:</span> {value}
+                        <span className="font-bold">{key}:</span> {value}
                       </div>
                     ))}
                   </div>

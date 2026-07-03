@@ -137,23 +137,21 @@ export const RandomPicker: React.FC<RandomPickerProps> = ({ data, onPick, onAnim
     return (
       <div className="space-y-4">
         <div className="text-center">
-          <div className="flex items-center justify-center gap-2 mb-2">
-            <span className={`text-xs px-2 py-1 rounded font-semibold ${
-              result.source === 'manual' 
-                ? 'bg-purple-100 text-purple-700' 
-                : 'bg-green-100 text-green-700'
+          <div className="flex items-center justify-center gap-2 mb-3">
+            <span className={`text-xs px-3 py-1 rounded-full font-bold text-ink shadow-[inset_0_1px_0_rgba(255,255,255,0.45)] ${
+              result.source === 'manual' ? 'bg-lavender' : 'bg-canvassoft'
             }`}>
               {result.source === 'manual' ? '✏️ 직접 입력' : '📊 Google Sheets'}
             </span>
           </div>
-          <h3 className="text-3xl font-bold text-gray-800 mb-4">{result.title}</h3>
+          <h3 className="retro-display text-4xl mb-4 leading-tight">{result.title}</h3>
         </div>
-        
+
         {Object.keys(result.properties).length > 0 && (
           <div className="space-y-3">
             {Object.entries(result.properties).map(([key, value]) => (
-              <div key={key} className="bg-gray-50 rounded-lg p-4">
-                <p className="text-sm font-semibold text-gray-600 mb-2">{key}</p>
+              <div key={key} className="retro-news-row p-4">
+                <p className="text-[11px] font-bold uppercase tracking-wide text-inksoft mb-2">{key}</p>
                 <MediaRenderer content={value} />
               </div>
             ))}
@@ -164,36 +162,34 @@ export const RandomPicker: React.FC<RandomPickerProps> = ({ data, onPick, onAnim
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-6 space-y-6">
-      <div className="text-center">
-        <h2 className="text-3xl font-bold text-gray-800">🎲 랜덤 추첨</h2>
+    <div className="retro-hero p-6 space-y-6 min-h-[500px]">
+      <div className="relative text-center">
+        <h2 className="retro-display text-3xl">🎲 랜덤 추첨</h2>
       </div>
 
           {/* 룰렛 후보 표시 (애니메이션 중) */}
           {isAnimating && currentCandidate && (
-            <div className="p-8 bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 rounded-lg border-4 border-blue-300 animate-pulse shadow-xl">
+            <div className="relative p-8 rounded-md animate-pulse">
               <div className="space-y-4 transform transition-all duration-100">
                 <div className="text-center">
-                  <div className="flex items-center justify-center gap-2 mb-2">
-                    <span className={`text-sm px-3 py-1 rounded-full font-bold ${
-                      currentCandidate.source === 'manual' 
-                        ? 'bg-purple-200 text-purple-800' 
-                        : 'bg-green-200 text-green-800'
+                  <div className="flex items-center justify-center gap-2 mb-3">
+                    <span className={`text-sm px-3 py-1 rounded-full font-bold text-ink shadow-[inset_0_1px_0_rgba(255,255,255,0.45)] ${
+                      currentCandidate.source === 'manual' ? 'bg-lavender' : 'bg-canvassoft'
                     }`}>
                       {currentCandidate.source === 'manual' ? '✏️ 직접 입력' : '📊 Google Sheets'}
                     </span>
                   </div>
-                  <h3 className="text-4xl font-bold text-gray-900 mb-2 animate-fade-in">
+                  <h3 className="retro-display retro-display-rolling text-4xl mb-2 leading-tight animate-fade-in">
                     {currentCandidate.title}
                   </h3>
                 </div>
-                
+
                 {Object.keys(currentCandidate.properties).length > 0 && (
                   <div className="grid grid-cols-1 gap-2 max-h-32 overflow-hidden">
                     {Object.entries(currentCandidate.properties).slice(0, 2).map(([key, value]) => (
-                      <div key={key} className="bg-white/70 rounded-lg p-2 text-center">
-                        <p className="text-xs font-semibold text-gray-600">{key}</p>
-                        <p className="text-sm text-gray-800 truncate">{value}</p>
+                      <div key={key} className="bg-white/70 rounded-[2px] p-2 text-center">
+                        <p className="text-[11px] font-bold uppercase tracking-wide text-inksoft">{key}</p>
+                        <p className="text-sm text-ink truncate">{value}</p>
                       </div>
                     ))}
                   </div>
@@ -204,16 +200,16 @@ export const RandomPicker: React.FC<RandomPickerProps> = ({ data, onPick, onAnim
 
           {/* 최종 결과 표시 */}
           {result && !isAnimating && (
-            <div className="p-8 bg-gradient-to-br from-yellow-50 via-orange-50 to-red-50 rounded-lg border-4 border-yellow-400 animate-slide-up shadow-2xl">
+            <div className="relative p-8 animate-slide-up">
               {renderResult()}
             </div>
           )}
 
       {/* 대기 상태 */}
       {!isAnimating && !result && (
-        <div className="p-12 text-center text-gray-400 border-2 border-dashed border-gray-300 rounded-lg">
+        <div className="relative p-12 text-center text-inksoft border-2 border-dashed border-mutedindigo rounded-md">
           <FiShuffle size={64} className="mx-auto mb-4 opacity-50" />
-          <p className="text-lg">오른쪽 버튼을 눌러 추첨을 시작하세요</p>
+          <p className="text-lg font-bold">오른쪽 버튼을 눌러 추첨을 시작하세요</p>
         </div>
       )}
     </div>

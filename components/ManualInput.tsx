@@ -153,48 +153,48 @@ export const ManualInput: React.FC<ManualInputProps> = ({ data, onDataChange }) 
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-6 space-y-4">
-      <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold text-gray-800">✏️ 직접 입력 (테이블 형식)</h2>
+    <div className="retro-panel p-6 space-y-4">
+      <div className="retro-section-bar -mx-6 -mt-6 flex justify-between items-center">
+        <h2>✏️ 직접 입력 (테이블 형식)</h2>
         <button
           onClick={handleAddColumn}
-          className="px-3 py-1.5 bg-purple-500 text-white rounded-lg hover:bg-purple-600 transition-colors text-sm font-semibold flex items-center gap-1"
+          className="retro-btn retro-btn-amber px-3 py-1 text-[11px] flex items-center gap-1"
         >
-          <FiPlus size={16} />
+          <FiPlus size={14} />
           컬럼 추가
         </button>
       </div>
 
       {data.length > 0 && (
-        <div className="text-sm text-gray-600 flex items-center justify-between">
+        <div className="text-sm font-bold text-inksoft flex items-center justify-between">
           <span>총 {data.length}개 항목</span>
         </div>
       )}
 
       {/* Table */}
-      <div className="border border-gray-200 rounded-lg overflow-hidden">
+      <div className="border border-hairline rounded-[2px] overflow-hidden bg-white">
         <div className="overflow-x-auto">
           <table className="w-full border-collapse">
-            <thead className="bg-gray-50">
+            <thead className="bg-platinum">
               <tr>
-                <th className="border-b border-r border-gray-200 px-3 py-2 text-left text-sm font-semibold text-gray-700 w-8">
+                <th className="border-b border-r border-hairline/40 px-3 py-2 text-left text-[11px] font-bold uppercase tracking-wide text-ink w-8">
                   NO
                 </th>
-                <th className="border-b border-r border-gray-200 px-3 py-2 text-left text-sm font-semibold text-gray-700 min-w-[150px]">
+                <th className="border-b border-r border-hairline/40 px-3 py-2 text-left text-[11px] font-bold uppercase tracking-wide text-ink min-w-[150px]">
                   제목 *
                 </th>
                 {columns.map((col) => (
-                  <th key={col.key} className="border-b border-r border-gray-200 px-3 py-2 text-left min-w-[150px]">
+                  <th key={col.key} className="border-b border-r border-hairline/40 px-3 py-2 text-left min-w-[150px]">
                     <div className="flex items-center gap-2">
                       <input
                         type="text"
                         value={col.label}
                         onChange={(e) => handleColumnLabelChange(col.key, e.target.value)}
-                        className="flex-1 text-sm font-semibold text-gray-700 bg-transparent border-none focus:outline-none focus:ring-1 focus:ring-blue-500 rounded px-1"
+                        className="flex-1 text-sm font-bold text-ink bg-transparent border-none focus:outline-none focus:ring-1 focus:ring-chromeindigo rounded px-1"
                       />
                       <button
                         onClick={() => handleRemoveColumn(col.key)}
-                        className="text-red-500 hover:bg-red-50 rounded p-1"
+                        className="text-brand hover:bg-[#fde5e6] rounded p-1"
                         title="컬럼 삭제"
                       >
                         <FiX size={14} />
@@ -202,7 +202,7 @@ export const ManualInput: React.FC<ManualInputProps> = ({ data, onDataChange }) 
                     </div>
                   </th>
                 ))}
-                <th className="border-b border-gray-200 px-3 py-2 text-center text-sm font-semibold text-gray-700 w-20">
+                <th className="border-b border-hairline/40 px-3 py-2 text-center text-[11px] font-bold uppercase tracking-wide text-ink w-20">
                   작업
                 </th>
               </tr>
@@ -210,53 +210,53 @@ export const ManualInput: React.FC<ManualInputProps> = ({ data, onDataChange }) 
             <tbody>
               {/* Existing rows */}
               {data.map((item, index) => (
-                <tr key={item.id} className="hover:bg-gray-50">
-                  <td className="border-b border-r border-gray-200 px-3 py-2 text-sm text-gray-600">
+                <tr key={item.id} className="hover:bg-canvassoft/20">
+                  <td className="border-b border-r border-hairline/30 px-3 py-2 text-sm text-inksoft">
                     {index + 1}
                   </td>
-                  <td className="border-b border-r border-gray-200 px-3 py-2">
+                  <td className="border-b border-r border-hairline/30 px-3 py-2">
                     {editingId === item.id ? (
                       <input
                         type="text"
                         value={editingData?.title || ''}
                         onChange={(e) => setEditingData(editingData ? { ...editingData, title: e.target.value } : null)}
-                        className="w-full px-2 py-1 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                        className="retro-input w-full px-2 py-1 text-sm"
                       />
                     ) : (
-                      <span className="text-sm text-gray-800 font-medium">{item.title}</span>
+                      <span className="text-sm text-ink font-medium">{item.title}</span>
                     )}
                   </td>
                   {columns.map((col) => (
-                    <td key={col.key} className="border-b border-r border-gray-200 px-3 py-2">
+                    <td key={col.key} className="border-b border-r border-hairline/30 px-3 py-2">
                       {editingId === item.id ? (
                         <input
                           type="text"
                           value={editingData?.properties[col.label] || ''}
                           onChange={(e) => handleEditPropertyChange(col.label, e.target.value)}
                           placeholder={`${col.label} 입력`}
-                          className="w-full px-2 py-1 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                          className="retro-input w-full px-2 py-1 text-sm"
                         />
                       ) : (
-                        <span className="text-sm text-gray-700 break-all">
+                        <span className="text-sm text-inksoft break-all">
                           {item.properties[col.label] || '-'}
                         </span>
                       )}
                     </td>
                   ))}
-                  <td className="border-b border-gray-200 px-3 py-2">
+                  <td className="border-b border-hairline/30 px-3 py-2">
                     <div className="flex justify-center gap-1">
                       {editingId === item.id ? (
                         <>
                           <button
                             onClick={handleSaveEdit}
-                            className="p-1.5 text-green-600 hover:bg-green-50 rounded transition-colors"
+                            className="p-1.5 text-signal hover:bg-[#fff1e2] rounded transition-colors"
                             title="저장"
                           >
                             <FiSave size={16} />
                           </button>
                           <button
                             onClick={handleCancelEdit}
-                            className="p-1.5 text-gray-600 hover:bg-gray-100 rounded transition-colors"
+                            className="p-1.5 text-mutedindigo hover:bg-platinum rounded transition-colors"
                             title="취소"
                           >
                             <FiX size={16} />
@@ -266,14 +266,14 @@ export const ManualInput: React.FC<ManualInputProps> = ({ data, onDataChange }) 
                         <>
                           <button
                             onClick={() => handleStartEdit(item)}
-                            className="p-1.5 text-blue-600 hover:bg-blue-50 rounded transition-colors"
+                            className="p-1.5 text-inksoft hover:bg-canvassoft/40 rounded transition-colors"
                             title="편집"
                           >
                             <FiEdit2 size={16} />
                           </button>
                           <button
                             onClick={() => handleRemoveRow(item.id)}
-                            className="p-1.5 text-red-600 hover:bg-red-50 rounded transition-colors"
+                            className="p-1.5 text-brand hover:bg-[#fde5e6] rounded transition-colors"
                             title="삭제"
                           >
                             <FiTrash2 size={16} />
@@ -284,37 +284,37 @@ export const ManualInput: React.FC<ManualInputProps> = ({ data, onDataChange }) 
                   </td>
                 </tr>
               ))}
-              
+
               {/* New row input */}
-              <tr className="bg-blue-50">
-                <td className="border-b border-r border-gray-200 px-3 py-2 text-sm text-gray-400">
+              <tr className="bg-canvassoft/30">
+                <td className="border-b border-r border-hairline/30 px-3 py-2 text-sm text-mutedindigo">
                   •
                 </td>
-                <td className="border-b border-r border-gray-200 px-3 py-2">
+                <td className="border-b border-r border-hairline/30 px-3 py-2">
                   <input
                     type="text"
                     value={newRow.title}
                     onChange={(e) => setNewRow({ ...newRow, title: e.target.value })}
                     placeholder="제목 입력 (필수)"
-                    className="w-full px-2 py-1 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                    className="retro-input w-full px-2 py-1 text-sm"
                   />
                 </td>
                 {columns.map((col) => (
-                  <td key={col.key} className="border-b border-r border-gray-200 px-3 py-2">
+                  <td key={col.key} className="border-b border-r border-hairline/30 px-3 py-2">
                     <input
                       type="text"
                       value={newRow[col.key] || ''}
                       onChange={(e) => setNewRow({ ...newRow, [col.key]: e.target.value })}
                       placeholder={`${col.label} 입력`}
-                      className="w-full px-2 py-1 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                      className="retro-input w-full px-2 py-1 text-sm"
                     />
                   </td>
                 ))}
-                <td className="border-b border-gray-200 px-3 py-2">
+                <td className="border-b border-hairline/30 px-3 py-2">
                   <button
                     onClick={handleAddRow}
                     disabled={!newRow.title.trim()}
-                    className="w-full px-2 py-1.5 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-1 text-sm font-semibold"
+                    className="retro-btn retro-btn-carbon w-full px-2 py-1.5 text-xs flex items-center justify-center gap-1"
                   >
                     <FiPlus size={16} />
                     추가
@@ -327,9 +327,9 @@ export const ManualInput: React.FC<ManualInputProps> = ({ data, onDataChange }) 
       </div>
 
       {/* 빠른 입력 */}
-      <div className="bg-purple-50 border border-purple-200 rounded-lg p-4 space-y-2">
-        <h3 className="text-sm font-bold text-purple-800">⚡ 빠른 입력</h3>
-        <p className="text-xs text-purple-700">
+      <div className="retro-plate border-l-4 border-l-signal p-4 space-y-2">
+        <h3 className="text-[12px] font-bold uppercase tracking-wide text-ink">⚡ 빠른 입력</h3>
+        <p className="text-xs text-inksoft">
           콤마(,) 또는 줄바꿈으로 구분해 한 번에 추가합니다. &quot;이름*3&quot;처럼 쓰면 같은 후보가 3번 들어갑니다.
         </p>
         <textarea
@@ -337,19 +337,19 @@ export const ManualInput: React.FC<ManualInputProps> = ({ data, onDataChange }) 
           onChange={(e) => setQuickInput(e.target.value)}
           rows={2}
           placeholder="예: 치킨, 피자*3, 초밥"
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm resize-y"
+          className="retro-input w-full px-3 py-2 text-sm resize-y"
         />
         <button
           onClick={handleQuickAdd}
           disabled={!quickInput.trim()}
-          className="w-full px-3 py-2 bg-purple-500 text-white rounded-lg hover:bg-purple-600 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-1 text-sm font-semibold"
+          className="retro-btn retro-btn-signal w-full px-3 py-2 text-sm flex items-center justify-center gap-1"
         >
           <FiPlus size={16} />
           한 번에 추가
         </button>
       </div>
 
-      <div className="text-xs text-gray-500 space-y-1">
+      <div className="border-t border-dotted border-mutedindigo pt-4 text-xs text-inksoft space-y-1">
         <p>💡 <strong>팁:</strong> 컬럼 이름을 클릭하여 수정할 수 있습니다.</p>
         <p>💡 이미지 URL이나 유튜브 링크를 입력하면 자동으로 미디어로 표시됩니다.</p>
       </div>
