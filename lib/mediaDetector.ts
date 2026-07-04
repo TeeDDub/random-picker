@@ -114,3 +114,32 @@ export const isValidUrl = (content: string): boolean => {
   }
 };
 
+/**
+ * YouTube thumbnail URL for a video ID — used as the roulette preview frame
+ * (an iframe is too heavy to mount/unmount every spin) and for preloading.
+ */
+export const youtubeThumbnailUrl = (videoId: string): string =>
+  `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
+
+/**
+ * Collect every preloadable image URL (images + YouTube thumbnails) from items,
+ * so the roulette animation renders them instantly from cache instead of
+ * flashing a raw URL while the image loads.
+ */
+export const collectPreloadUrls = (
+  items: { properties: { [key: string]: string } }[]
+): string[] => {
+  const urls = new Set<string>();
+  items.forEach(item => {
+    Object.values(item.properties).forEach(value => {
+      const media = detectMediaType(value);
+      if (media.type === 'image' && media.url) {
+        urls.add(media.url);
+      } else if (media.type === 'youtube' && media.videoId) {
+        urls.add(youtubeThumbnailUrl(media.videoId));
+      }
+    });
+  });
+  return Array.from(urls);
+};
+

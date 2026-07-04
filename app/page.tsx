@@ -15,6 +15,7 @@ import {
   getRemoveSameTitleOption,
   saveRemoveSameTitleOption,
 } from '@/lib/localStorage';
+import { collectPreloadUrls } from '@/lib/mediaDetector';
 import { ManualInput } from '@/components/ManualInput';
 import { GoogleSheetsInput } from '@/components/GoogleSheetsInput';
 import { DataPreview } from '@/components/DataPreview';
@@ -37,6 +38,7 @@ export default function Home() {
   const [pickedItems, setPickedItems] = useState<DataItem[]>([]);
   const [removeSameTitle, setRemoveSameTitle] = useState(false);
   const randomPickerRef = React.useRef<{ startPick: () => void } | null>(null);
+  const preloadedUrlsRef = React.useRef<Set<string>>(new Set());
 
   // Load data from localStorage on mount
   useEffect(() => {
@@ -57,6 +59,19 @@ export default function Home() {
     if (mounted) {
       saveAllData(allData);
     }
+  }, [allData, mounted]);
+
+  // Preload media at data-load time (each unique URL once) so the roulette
+  // renders images from cache instead of flashing a raw URL while they load.
+  useEffect(() => {
+    if (!mounted) return;
+    collectPreloadUrls(allData).forEach((url) => {
+      if (preloadedUrlsRef.current.has(url)) return;
+      preloadedUrlsRef.current.add(url);
+      const img = new window.Image();
+      img.referrerPolicy = 'no-referrer';
+      img.src = url;
+    });
   }, [allData, mounted]);
 
   // Handle manual data change
