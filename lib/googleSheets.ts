@@ -53,7 +53,7 @@ export const fetchGoogleSheetsData = async (url: string): Promise<DataItem[]> =>
  * Parse CSV text into rows (RFC 4180 level, character state machine).
  * Handles quoted fields containing commas/newlines, "" escapes, CRLF/LF.
  */
-const parseCsvRows = (csvText: string): string[][] => {
+export const parseCsvRows = (csvText: string): string[][] => {
   const rows: string[][] = [];
   let row: string[] = [];
   let field = '';
@@ -98,6 +98,17 @@ const parseCsvRows = (csvText: string): string[][] => {
 
   return rows;
 };
+
+/**
+ * CSV 행 배열에서 분류 옵션 목록을 추출한다.
+ * 첫 행은 헤더로 간주해 제외하고, 각 데이터 행은 2번째 열(제목)이 있으면
+ * 그것을, 없으면 1번째 열을 옵션 값으로 쓴다. 공백은 trim, 빈 값은 제외한다.
+ */
+export const extractOptions = (rows: string[][]): string[] =>
+  rows
+    .slice(1)
+    .map((cols) => (cols[1]?.trim() || cols[0]?.trim() || ''))
+    .filter(Boolean);
 
 /**
  * Parse CSV data into DataItem array
