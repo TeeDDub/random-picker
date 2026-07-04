@@ -4,7 +4,6 @@ import React, { useState } from 'react';
 import { FiShuffle } from 'react-icons/fi';
 import { DataItem } from '@/types';
 import { MediaRenderer } from './MediaRenderer';
-import { detectMediaType } from '@/lib/mediaDetector';
 
 interface RandomPickerProps {
   data: DataItem[];
@@ -31,20 +30,6 @@ export const RandomPicker: React.FC<RandomPickerProps> = ({ data, onPick, onAnim
       animatingRef.current = false;
     };
   }, []);
-
-  // Preload image URLs so results don't show a blank frame while loading
-  React.useEffect(() => {
-    data.forEach(item => {
-      Object.values(item.properties).forEach(value => {
-        const media = detectMediaType(value);
-        if (media.type === 'image' && media.url) {
-          const img = new window.Image();
-          img.referrerPolicy = 'no-referrer';
-          img.src = media.url;
-        }
-      });
-    });
-  }, [data]);
 
   // Listen to external pick event
   React.useEffect(() => {
@@ -185,11 +170,11 @@ export const RandomPicker: React.FC<RandomPickerProps> = ({ data, onPick, onAnim
                 </div>
 
                 {Object.keys(currentCandidate.properties).length > 0 && (
-                  <div className="grid grid-cols-1 gap-2 max-h-32 overflow-hidden">
+                  <div className="grid grid-cols-1 gap-2 max-h-72 overflow-hidden">
                     {Object.entries(currentCandidate.properties).slice(0, 2).map(([key, value]) => (
-                      <div key={key} className="bg-white/70 rounded-[2px] p-2 text-center">
+                      <div key={key} className="bg-white/70 rounded-[2px] p-2 text-center space-y-1">
                         <p className="text-[11px] font-bold uppercase tracking-wide text-inksoft">{key}</p>
-                        <p className="text-sm text-ink truncate">{value}</p>
+                        <MediaRenderer content={value} preview className="text-sm" />
                       </div>
                     ))}
                   </div>

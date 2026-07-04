@@ -2,20 +2,37 @@
 
 import React from 'react';
 import Image from 'next/image';
-import { detectMediaType, isValidUrl } from '@/lib/mediaDetector';
+import { detectMediaType, isValidUrl, youtubeThumbnailUrl } from '@/lib/mediaDetector';
 
 interface MediaRendererProps {
   content: string;
   className?: string;
+  // preview: render a lightweight, non-interactive version for the roulette spin
+  // (YouTube shows a thumbnail image instead of mounting an iframe every frame).
+  preview?: boolean;
 }
 
-export const MediaRenderer: React.FC<MediaRendererProps> = ({ content, className = '' }) => {
+export const MediaRenderer: React.FC<MediaRendererProps> = ({ content, className = '', preview = false }) => {
   if (!content) return null;
 
   const mediaInfo = detectMediaType(content);
 
   switch (mediaInfo.type) {
     case 'youtube':
+      if (preview && mediaInfo.videoId) {
+        return (
+          <div className={`relative w-full aspect-video ${className}`}>
+            <Image
+              src={youtubeThumbnailUrl(mediaInfo.videoId)}
+              alt="YouTube thumbnail"
+              fill
+              className="object-contain rounded-lg shadow-lg"
+              unoptimized
+              referrerPolicy="no-referrer"
+            />
+          </div>
+        );
+      }
       return (
         <div className={`w-full aspect-video ${className}`}>
           <iframe
