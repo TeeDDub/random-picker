@@ -1,10 +1,12 @@
-import { DataItem, GoogleSheetsData, PickHistory } from '@/types';
+import { DataItem, GoogleSheetsData, PickHistory, CombinationCategory, CombinationResult } from '@/types';
 
 const STORAGE_KEYS = {
   ALL_DATA: 'random-picker-all-data',
   GOOGLE_SHEETS_INFO: 'random-picker-google-sheets-info',
   PICK_HISTORY: 'random-picker-history',
   REMOVE_SAME_TITLE: 'random-picker-remove-same-title',
+  COMBINATION_CATEGORIES: 'random-picker-combination-categories',
+  COMBINATION_HISTORY: 'random-picker-combination-history',
 } as const;
 
 // All Data Management (통합 데이터)
@@ -113,6 +115,54 @@ export const saveRemoveSameTitleOption = (value: boolean): void => {
   } catch (error) {
     console.error('Failed to save remove-same-title option:', error);
   }
+};
+
+// Combination (랜덤 조합) 전용 저장 — 기존 통합 풀과 독립
+export const getCombinationCategories = (): CombinationCategory[] => {
+  if (typeof window === 'undefined') return [];
+  try {
+    const data = localStorage.getItem(STORAGE_KEYS.COMBINATION_CATEGORIES);
+    return data ? JSON.parse(data) : [];
+  } catch (error) {
+    console.error('Failed to load combination categories:', error);
+    return [];
+  }
+};
+
+export const saveCombinationCategories = (categories: CombinationCategory[]): void => {
+  if (typeof window === 'undefined') return;
+  try {
+    localStorage.setItem(STORAGE_KEYS.COMBINATION_CATEGORIES, JSON.stringify(categories));
+  } catch (error) {
+    console.error('Failed to save combination categories:', error);
+  }
+};
+
+export const getCombinationHistory = (): CombinationResult[] => {
+  if (typeof window === 'undefined') return [];
+  try {
+    const data = localStorage.getItem(STORAGE_KEYS.COMBINATION_HISTORY);
+    return data ? JSON.parse(data) : [];
+  } catch (error) {
+    console.error('Failed to load combination history:', error);
+    return [];
+  }
+};
+
+export const addToCombinationHistory = (result: CombinationResult): void => {
+  if (typeof window === 'undefined') return;
+  try {
+    const current = getCombinationHistory();
+    const next = [result, ...current].slice(0, 5); // 최근 5개
+    localStorage.setItem(STORAGE_KEYS.COMBINATION_HISTORY, JSON.stringify(next));
+  } catch (error) {
+    console.error('Failed to save combination history:', error);
+  }
+};
+
+export const clearCombinationHistory = (): void => {
+  if (typeof window === 'undefined') return;
+  localStorage.removeItem(STORAGE_KEYS.COMBINATION_HISTORY);
 };
 
 export const clearAll = (): void => {
