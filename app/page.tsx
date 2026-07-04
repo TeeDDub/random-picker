@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { FiTrash2, FiShuffle, FiEdit, FiGithub } from 'react-icons/fi';
-import { DataItem, PickHistory as PickHistoryType } from '@/types';
+import { DataItem, PickHistory as PickHistoryType, CombinationCategory, CombinationPick, CombinationResult } from '@/types';
 import {
   getAllData,
   saveAllData,
@@ -14,6 +14,11 @@ import {
   clearAll,
   getRemoveSameTitleOption,
   saveRemoveSameTitleOption,
+  getCombinationCategories,
+  saveCombinationCategories,
+  getCombinationHistory,
+  addToCombinationHistory,
+  clearCombinationHistory,
 } from '@/lib/localStorage';
 import { collectPreloadUrls } from '@/lib/mediaDetector';
 import { ManualInput } from '@/components/ManualInput';
@@ -23,8 +28,11 @@ import { RandomPicker } from '@/components/RandomPicker';
 import { PickerButton } from '@/components/PickerButton';
 import { PickHistory } from '@/components/PickHistory';
 import { TeamDivider } from '@/components/TeamDivider';
+import { CombinationInput } from '@/components/CombinationInput';
+import { CombinationPicker } from '@/components/CombinationPicker';
+import { CombinationHistory } from '@/components/CombinationHistory';
 
-type ViewMode = 'input' | 'picker' | 'team';
+type ViewMode = 'input' | 'picker' | 'team' | 'combination';
 
 export default function Home() {
   const [allData, setAllData] = useState<DataItem[]>([]);
@@ -37,6 +45,8 @@ export default function Home() {
   // 중복 방지: 이미 뽑힌 항목들 (새로고침 시 초기화)
   const [pickedItems, setPickedItems] = useState<DataItem[]>([]);
   const [removeSameTitle, setRemoveSameTitle] = useState(false);
+  const [categories, setCategories] = useState<CombinationCategory[]>([]);
+  const [combinationHistory, setCombinationHistory] = useState<CombinationResult[]>([]);
   const randomPickerRef = React.useRef<{ startPick: () => void } | null>(null);
   const preloadedUrlsRef = React.useRef<Set<string>>(new Set());
 
@@ -52,6 +62,8 @@ export default function Home() {
     
     setPickHistory(getPickHistory());
     setRemoveSameTitle(getRemoveSameTitleOption());
+    setCategories(getCombinationCategories());
+    setCombinationHistory(getCombinationHistory());
   }, []);
 
   // Save data to localStorage whenever it changes
@@ -60,6 +72,13 @@ export default function Home() {
       saveAllData(allData);
     }
   }, [allData, mounted]);
+
+  // 조합 분류를 localStorage에 저장
+  useEffect(() => {
+    if (mounted) {
+      saveCombinationCategories(categories);
+    }
+  }, [categories, mounted]);
 
   // Preload media at data-load time (each unique URL once) so the roulette
   // renders images from cache instead of flashing a raw URL while they load.
@@ -120,6 +139,20 @@ export default function Home() {
   // Reset picked items so everything can be drawn again
   const handleResetPicks = () => {
     setPickedItems([]);
+  };
+
+  // 조합 추첨 결과를 히스토리에 저장
+  const handleCombinationPick = (picks: CombinationPick[]) => {
+    const result: CombinationResult = { timestamp: Date.now(), picks };
+    addToCombinationHistory(result);
+    setCombinationHistory(getCombinationHistory());
+  };
+
+  const handleClearCombinationHistory = () => {
+    if (confirm('조합 히스토리를 삭제하시겠습니까?')) {
+      clearCombinationHistory();
+      setCombinationHistory([]);
+    }
   };
 
   // Toggle the remove-same-title option (persisted)
@@ -211,6 +244,14 @@ export default function Home() {
             }`}
           >
             👥 팀나누기 {allData.length > 0 && `(${allData.length})`}
+          </button>
+          <button
+            onClick={() => setViewMode('combination')}
+            className={`retro-btn px-8 py-3 text-sm flex items-center gap-2 ${
+              viewMode === 'combination' ? 'retro-tab-active' : 'retro-tab-idle'
+            }`}
+          >
+            🎰 랜덤 조합
           </button>
         </div>
 
@@ -306,9 +347,19 @@ export default function Home() {
               </div>
             </div>
           </div>
-        ) : (
+        ) : viewMode === 'team' ? (
           <div className="animate-fade-in">
             <TeamDivider data={allData} />
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="lg:col-span-2 space-y-6 animate-fade-in">
+              <CombinationPicker categories={categories} onPick={handleCombinationPick} />
+              <CombinationInput categories={categories} onChange={setCategories} />
+            </div>
+            <div className="animate-fade-in">
+              <CombinationHistory history={combinationHistory} onClear={handleClearCombinationHistory} />
+            </div>
           </div>
         )}
 
