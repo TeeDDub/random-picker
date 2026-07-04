@@ -24,3 +24,19 @@ export interface MediaInfo {
   text?: string;
 }
 
+export interface CombinationCategory {
+  id: string;
+  name: string;
+  url: string;
+  options: string[];
+}
+
+export interface CombinationPick {
+  name: string;
+  value: string;
+}
+
+export interface CombinationResult {
+  timestamp: number;
+  picks: CombinationPick[];
+}
