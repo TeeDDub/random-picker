@@ -111,6 +111,24 @@ export const extractOptions = (rows: string[][]): string[] =>
     .filter(Boolean);
 
 /**
+ * 분류(카테고리) 시트를 gviz CSV로 불러와 옵션 목록을 반환한다.
+ * 기존 fetchGoogleSheetsData와 동일한 CORS/비공개 시트 처리를 하되,
+ * 행 구조 대신 단일 옵션 목록(extractOptions)을 뽑는다.
+ */
+export const fetchCategoryOptions = async (url: string): Promise<string[]> => {
+  const csvUrl = convertToCsvUrl(url);
+  const response = await fetch(csvUrl);
+  if (!response.ok) {
+    throw new Error('Failed to fetch data from Google Sheets');
+  }
+  const text = await response.text();
+  if (text.trimStart().startsWith('<')) {
+    throw new Error('Sheet is not shared publicly');
+  }
+  return extractOptions(parseCsvRows(text));
+};
+
+/**
  * Parse CSV data into DataItem array
  */
 const parseCsvData = (csvText: string): DataItem[] => {
