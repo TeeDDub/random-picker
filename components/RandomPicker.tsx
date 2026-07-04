@@ -154,8 +154,8 @@ export const RandomPicker: React.FC<RandomPickerProps> = ({ data, onPick, onAnim
 
           {/* 룰렛 후보 표시 (애니메이션 중) */}
           {isAnimating && currentCandidate && (
-            <div className="relative p-8 rounded-md animate-pulse">
-              <div className="space-y-4 transform transition-all duration-100">
+            <div className="relative flex items-center justify-center min-h-[440px] p-4 rounded-md animate-pulse">
+              <div className="w-full space-y-4 transform transition-all duration-100">
                 <div className="text-center">
                   <div className="flex items-center justify-center gap-2 mb-3">
                     <span className={`text-sm px-3 py-1 rounded-full font-bold text-ink shadow-[inset_0_1px_0_rgba(255,255,255,0.45)] ${
@@ -170,11 +170,11 @@ export const RandomPicker: React.FC<RandomPickerProps> = ({ data, onPick, onAnim
                 </div>
 
                 {Object.keys(currentCandidate.properties).length > 0 && (
-                  <div className="grid grid-cols-1 gap-2 max-h-72 overflow-hidden">
+                  <div className="grid grid-cols-1 gap-2">
                     {Object.entries(currentCandidate.properties).slice(0, 2).map(([key, value]) => (
                       <div key={key} className="bg-white/70 rounded-[2px] p-2 text-center space-y-1">
                         <p className="text-[11px] font-bold uppercase tracking-wide text-inksoft">{key}</p>
-                        <MediaRenderer content={value} preview className="text-sm" />
+                        <MediaRenderer content={value} preview className="text-sm max-h-[300px]" />
                       </div>
                     ))}
                   </div>
